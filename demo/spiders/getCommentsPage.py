@@ -23,10 +23,9 @@ class CommentsPageSpider(scrapy.Spider):
                 )
 
     def parseTimeLine(self, response):
-        for post in response.xpath("//article[contains(@data-ft,'top_level_post_id')]")[1:2]:     
+        for post in response.xpath("//article[contains(@data-ft,'top_level_post_id')]"):     
             href = post.xpath(".//a[contains(@href,'footer')]/@href").extract_first()
             yield scrapy.Request(self.plain_fb + href, callback=self.parsePost)
-        """ open_in_browser(response) """
         
         more_path = "//a[contains(@href,'stream/?cursor')]/@href"
         new_page = response.xpath(more_path).extract_first()
@@ -55,18 +54,16 @@ class CommentsPageSpider(scrapy.Spider):
 
 
     def parseUtil(self, cmt):
-        src = cmt.xpath('.//h3/a/text()').extract_first().strip()
-        content = cmt.xpath('.//div[h3]/div[1]//text()').extract()
-        print(content)
+        try:
+            src = cmt.xpath('.//h3/a/text()').extract_first().strip()
+            content = cmt.xpath('.//div[h3]/div[1]//text()').extract()
 
-        if len(content) == 0:
-            content = 'text not found'
-
-        item = CommentItem()
-        item['src'] = src
-        item['content'] = content
-
-        return item
+            item = CommentItem()
+            item['src'] = src
+            item['content'] = content
+            return item
+        except:
+            CloseSpider("ERROR!!!")
 
     def parseReplyPage(self, response):
         #parse replies comment
@@ -89,8 +86,8 @@ class CommentsPageSpider(scrapy.Spider):
                                     callback=self.parseReplyPage)
         
 
-
     def parsePost(self, response):
+        open_in_browser(response)
         non_reply_path = './/div[string-length(@class) = 2 and count(@id)=1 and contains("0123456789", substring(@id,1,1)) and not(.//div[contains(@id,"comment_replies")])]'
         for cmt in response.xpath(non_reply_path):
             item = self.parseUtil(cmt)
