@@ -9,7 +9,6 @@ import pandas as pd
 class CommentsPageSpider(scrapy.Spider):
     name = "cmt"
     plain_fb = "https://mbasic.facebook.com"
-    pd.read_csv("../test.csv")
     page = "/blvanhquan"
     def start_requests(self):
             yield scrapy.Request(self.plain_fb + self.page + '?v=timeline', callback=self.authorize)
