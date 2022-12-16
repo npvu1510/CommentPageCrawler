@@ -4,11 +4,12 @@ import json
 from .. items import CommentItem
 from scrapy.utils.response import open_in_browser
 from scrapy.exceptions import CloseSpider
+import pandas as pd
 
 class CommentsPageSpider(scrapy.Spider):
     name = "cmt"
     plain_fb = "https://mbasic.facebook.com"
-
+    pd.read_csv("../test.csv")
     page = "/blvanhquan"
     def start_requests(self):
             yield scrapy.Request(self.plain_fb + self.page + '?v=timeline', callback=self.authorize)
@@ -17,7 +18,7 @@ class CommentsPageSpider(scrapy.Spider):
         yield scrapy.FormRequest.from_response(
                 response,
                 formxpath='//form[contains(@action, "login")]',
-                formdata={'email': '0587756618','pass': 'Phanvu151001'},
+                formdata={'email': '','pass': ''},
                 callback=self.parseTimeLine,
                 meta = {'year': 2022}
                 )
@@ -32,7 +33,7 @@ class CommentsPageSpider(scrapy.Spider):
 
         if new_page:
             new_page = self.plain_fb + new_page
-
+            
             try:
                 yield scrapy.Request(new_page, 
                             callback=self.parseTimeLine, meta={'year': response.meta['year']})
