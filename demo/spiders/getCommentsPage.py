@@ -87,7 +87,7 @@ class CommentsPageSpider(scrapy.Spider):
         
 
     def parsePost(self, response):
-        open_in_browser(response)
+        """ open_in_browser(response) """
         non_reply_path = './/div[string-length(@class) = 2 and count(@id)=1 and contains("0123456789", substring(@id,1,1)) and not(.//div[contains(@id,"comment_replies")])]'
         for cmt in response.xpath(non_reply_path):
             item = self.parseUtil(cmt)
